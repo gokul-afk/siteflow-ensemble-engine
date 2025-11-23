@@ -16,6 +16,13 @@ activate-env:
 	powershell -ExecutionPolicy Bypass -File activate_and_install.ps1
 	# Activates the Python virtual environment and installs dependencies via PowerShell script.
 
+setup-all:
+	$(MAKE) setup-env
+	$(MAKE) activate-env
+	cd api-gateway && npm install
+	@echo "All environments and dependencies are set up."
+  # Runs Python venv setup, installs Python dependencies, and Node.js dependencies for API gateway.
+
 transform-data:
 	$(PYTHON_ENV)\Scripts\python scripts/transform_kaggle_dataset.py
 	# Runs the Python script to transform the Kaggle dataset using the virtual environment's Python interpreter.
