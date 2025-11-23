@@ -14,7 +14,7 @@ type APIResponse struct {
 	SiteID    int             `json:"site_id"`
 	Algorithm string          `json:"algorithm"` // "Ensemble"
 	Forecast  []ForecastPoint `json:"forecast"`
-	Sources   []string        `json:"sources"`   // List of models used (Prophet, SARIMA)
+	Sources   []string        `json:"sources"` // List of models used (Prophet, SARIMA)
 	Latency   string          `json:"latency"`
 }
 
