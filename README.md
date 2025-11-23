@@ -1,42 +1,49 @@
+# SiteFlow Ensemble Engine
+
+
+# SiteFlow Ensemble Engine
+
 ## Example Forecast Comparison
 
 ![Forecast Comparison Example](generated_forecasts/forecast_comparisons_site_1_20251123_234350.png)
 
-# SiteFlow Ensemble Engine
-
 ## Overview
 
-A polyglot forecasting engine for construction sites, designed to showcase senior-level systems architecture and ensemble modeling. Built for Sitemate's "Jack of all trades" requirement, this project demonstrates how to combine Node.js, Go, and Python for a scalable, maintainable, and extensible solution.
+SiteFlow Ensemble Engine is a polyglot forecasting system for construction sites, designed to showcase senior-level architecture and ensemble modeling. Built for Sitemate’s “Jack of all trades” requirement, it demonstrates how to combine Node.js, Go, and Python for scalable, maintainable, and extensible solutions.
 
----
+## Features
+
+- **Polyglot Architecture:** Node.js API Gateway, Go Orchestrator, Python Models.
+- **Ensemble Modeling:** Combines Prophet, SARIMA, and XGBoost forecasts for robust predictions.
+- **Concurrency:** Go orchestrator runs Python models in parallel for speed.
+- **Extensibility:** Easily add new models or swap orchestration logic.
+- **Demo-Ready Visualization:** Automatically generates and saves forecast comparison plots.
 
 ## Architecture
 
 ```
 siteflow-ensemble-engine/
-├── api-gateway/        # Node.js API Gateway (The Face)
+├── api-gateway/        # Node.js API Gateway
 │   ├── server.js
 │   └── package.json
-├── orchestrator/       # Go Orchestrator (The Muscle)
+├── orchestrator/       # Go Orchestrator
 │   ├── main.go
 │   ├── executor.go
 │   └── aggregator.go
-├── models/             # Python Models (The Brain)
+├── models/             # Python Models
 │   ├── forecast_prophet.py
 │   ├── forecast_sarima.py
+│   ├── forecast_xgboost.py
+│   ├── plot_ensemble_results.py
 │   └── requirements.txt
 ├── data/               # Construction Data
 │   └── site_materials_usage.csv
+├── generated_forecasts/ # Saved forecast comparison images
+│   └── forecast_comparisons_site_1_YYYYMMDD_HHMMSS.png
 └── README.md
 ```
 
-- **Node.js**: The Site Manager (friendly, speaks HTTP)
-- **Go**: The Foreman (fast, coordinates workers)
-- **Python**: The Specialist (smart, does the math)
-
----
-
-## Workflow Visualization
+## How It Works
 
 1. **User/API** sends a forecast request to Node.js (`/api-gateway`).
 2. **Node.js** forwards the request to Go orchestrator (`/orchestrator`).
@@ -45,40 +52,41 @@ siteflow-ensemble-engine/
 5. **Go** aggregates results (ensemble logic) and returns to Node.js.
 6. **Node.js** responds to the user.
 
----
+## Quickstart
 
-## Why This Architecture Wins
+### 1. Install Python dependencies
 
-- **Migration-Friendly**: Keeps legacy Node.js, adds Go for orchestration, Python for AI.
-- **Ensemble Modeling**: Runs multiple models (Prophet, SARIMA) and averages results for robustness.
-- **Go Concurrency**: Uses goroutines and WaitGroup for parallel execution.
-- **Extensible**: Easy to add new models or swap orchestration logic.
+```powershell
+python -m venv venv
+.\venv\Scripts\pip install -r models/requirements.txt
+```
 
----
+### 2. Run the Go orchestrator
 
-## Senior Engineer Defense
+```powershell
+make run
+```
 
-> "For this demo, I used shell execution for simplicity and isolation. In production, I'd refactor Python into a gRPC microservice, with Go sending protobuf messages to persistent Python workers—avoiding interpreter startup latency. This architecture demonstrates Go's concurrency and is easy to deploy for a proof-of-concept."
+### 3. Start the API Gateway
 
----
+```powershell
+cd api-gateway
+npm install
+node server.js
+```
 
-## Setup & Run
+### 4. Request a forecast
 
-1. **Install Python dependencies:**
-	```powershell
-	python -m venv venv
-	.\venv\Scripts\pip install -r models/requirements.txt
-	```
-2. **Run the orchestrator:**
-	```powershell
-	make run
-	```
-3. **Test the API:**
-	```powershell
-	curl "http://localhost:8080/forecast?site_id=1"
-	```
+```powershell
+curl "http://localhost:3000/forecast?site_id=1"
+```
 
----
+### 5. Generate and view forecast comparison plot
+
+```powershell
+venv\Scripts\python models/plot_ensemble_results.py --site_id 1
+```
+Find the generated image in `generated_forecasts/`.
 
 ## Data Format Example
 
@@ -89,16 +97,17 @@ date,material,units_consumed,site_id
 ...
 ```
 
----
-
 ## Extending the System
 
 - Add new Python models to `/models` and update Go orchestrator to include them.
 - Refactor Python scripts into a microservice for production.
 - Add OpenAPI docs to Node.js gateway for better API usability.
 
----
+## Senior Engineer Defense
+
+> “For this demo, I used shell execution for simplicity and isolation. In production, I’d refactor Python into a gRPC microservice, with Go sending protobuf messages to persistent Python workers—avoiding interpreter startup latency. This architecture demonstrates Go’s concurrency and is easy to deploy for a proof-of-concept.”
 
 ## License
 
 MIT
+

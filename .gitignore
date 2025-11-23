@@ -1,2 +1,7 @@
+
 # Ignore Python virtual environment
 venv/
+
+# Ignore Node.js files
+node_modules/
+npm-debug.log*
