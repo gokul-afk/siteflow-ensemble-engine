@@ -54,6 +54,33 @@ siteflow-ensemble-engine/
 
 ## Quickstart
 
+## Supported Operating Systems
+
+This project is cross-platform and works on Windows, Linux, and macOS. The Makefile automatically detects your OS and sets up paths accordingly.
+
+## Go Dependency Installation
+
+Go dependencies are installed automatically when you run:
+
+```powershell
+make setup-all
+```
+This runs `go mod tidy` in the `orchestrator` directory to fetch all required Go modules.
+
+## Troubleshooting
+
+- **Makefile errors:** Ensure you are using GNU Make (not nmake or other variants). If you see 'missing endif' or 'extraneous else', check for stray lines or encoding issues at the top of the Makefile.
+- **Missing dependencies:** Always run `make setup-all` before running other targets to ensure all Python, Node.js, and Go dependencies are installed.
+- **Plot image not showing in README:** Make sure the image file exists in `generated_forecasts/` and the path in the README matches the latest file name.
+
+## Updating the Plot Image in README
+
+After running `make plot`, a new PNG image is saved in the `generated_forecasts` folder. To display the latest image in your README, update the image link to match the newest file name, e.g.:
+
+```markdown
+![Forecast Comparison Example](generated_forecasts/forecast_comparisons_site_1_YYYYMMDD_HHMMSS.png)
+```
+
 ## Key Makefile Commands
 
 Use these Makefile targets for a fast, repeatable workflow:
