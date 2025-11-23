@@ -5,7 +5,7 @@
 
 ## Example Forecast Comparison
 
-![Forecast Comparison Example](generated_forecasts/forecast_comparisons_site_1_20251123_234350.png)
+![Forecast Comparison Example](generated_forecasts/forecast_comparisons_site_1_20251124_003917.png)
 
 ## Overview
 
@@ -53,6 +53,27 @@ siteflow-ensemble-engine/
 6. **Node.js** responds to the user.
 
 ## Quickstart
+
+## Key Makefile Commands
+
+Use these Makefile targets for a fast, repeatable workflow:
+
+- **setup-all**: Sets up Python venv, installs Python dependencies, and Node.js dependencies for the API gateway.
+	```powershell
+	make setup-all
+	```
+- **run**: Runs the Go orchestrator (executes all models and ensemble logic).
+	```powershell
+	make run
+	```
+- **gateway**: Starts the Node.js API gateway server.
+	```powershell
+	make gateway
+	```
+- **plot**: Generates and saves the ensemble forecast comparison plot for site_id 1.
+	```powershell
+	make plot
+	```
 
 ### 1. Install Python dependencies
 
