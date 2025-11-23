@@ -19,6 +19,18 @@ SiteFlow Ensemble Engine is a polyglot forecasting system for construction sites
 - **Extensibility:** Easily add new models or swap orchestration logic.
 - **Demo-Ready Visualization:** Automatically generates and saves forecast comparison plots.
 
+## Production Readiness & Trade-offs
+
+Current Approach (MVP): This demo uses shell execution (exec.Command) to spawn Python processes. This was chosen for simplicity, isolation, and ease of deployment—aligning with the "make it work" phase of startup engineering.
+
+Production Strategy (Scaling): In a high-load production environment, spawning a new Python interpreter for every request introduces unacceptable latency. To scale this, I would refactor the architecture:
+
+Persistent Workers: Convert the Python scripts into a long-running gRPC Microservice.
+
+Protocol Buffers: Use Protobuf for strictly typed, high-performance communication between the Go Orchestrator and Python Workers.
+
+Message Queue: Introduce RabbitMQ or SQS if the forecasting jobs become long-running/async tasks.
+
 ## Architecture
 
 ```
@@ -144,16 +156,6 @@ date,material,units_consumed,site_id
 2024-01-02,cement,520,1
 ...
 ```
-
-## Extending the System
-
-- Add new Python models to `/models` and update Go orchestrator to include them.
-- Refactor Python scripts into a microservice for production.
-- Add OpenAPI docs to Node.js gateway for better API usability.
-
-## Senior Engineer Defense
-
-> “For this demo, I used shell execution for simplicity and isolation. In production, I’d refactor Python into a gRPC microservice, with Go sending protobuf messages to persistent Python workers—avoiding interpreter startup latency. This architecture demonstrates Go’s concurrency and is easy to deploy for a proof-of-concept.”
 
 ## License
 
