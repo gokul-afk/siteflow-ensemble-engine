@@ -150,6 +150,63 @@ Find the generated image in `generated_forecasts/`.
 
 ## Data Format Example
 
+## OpenAPI Documentation
+
+The API gateway exposes a `/forecast` endpoint for ensemble forecasting. The OpenAPI specification is provided in `openapi.yaml`.
+
+You can view and interact with the API documentation using tools like [Swagger Editor](https://editor.swagger.io/) or [Redoc](https://redocly.com/):
+
+1. Open `openapi.yaml` in Swagger Editor or Redoc.
+2. Try out the `/forecast` endpoint by providing a `site_id` query parameter.
+
+**Example OpenAPI Spec:**
+
+```yaml
+openapi: 3.0.0
+info:
+	title: SiteFlow Ensemble Engine API
+	version: 1.0.0
+	description: API for ensemble forecasting of construction sites.
+servers:
+	- url: http://localhost:3000
+paths:
+	/forecast:
+		get:
+			summary: Get ensemble forecast for a construction site
+			parameters:
+				- name: site_id
+					in: query
+					required: true
+					schema:
+						type: integer
+					description: Site ID for which to generate the forecast
+			responses:
+				'200':
+					description: Successful forecast response
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									site_id:
+										type: integer
+									forecasts:
+										type: array
+										items:
+											type: object
+											properties:
+												model:
+													type: string
+												prediction:
+													type: number
+									ensemble:
+										type: number
+				'400':
+					description: Invalid request
+				'500':
+					description: Internal server error
+```
+
 ```
 date,material,units_consumed,site_id
 2024-01-01,cement,500,1
