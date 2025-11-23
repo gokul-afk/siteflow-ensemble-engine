@@ -1,25 +1,17 @@
 # Makefile for SiteFlow Ensemble Engine data commands
 # This Makefile automates environment setup, data transformation, and running services for a multi-language project.
-
-.PHONY: setup-env activate-env download-data
-# .PHONY declares targets that aren't actual files, ensuring commands always run.
-
-
-# PYTHON_ENV variable defines the name of the Python virtual environment directory.
 PYTHON_ENV=venv
-
 # Detect OS and set Python executable path
 ifeq (,$(findstring Windows_NT,$(OS)))
-	PYTHON_BIN=$(PYTHON_ENV)/bin/python
-	PIP_BIN=$(PYTHON_ENV)/bin/pip
-	ACTIVATE=. $(PYTHON_ENV)/bin/activate
-	SEP=/
+PYTHON_BIN=$(PYTHON_ENV)/bin/python
+PIP_BIN=$(PYTHON_ENV)/bin/pip
+ACTIVATE=. $(PYTHON_ENV)/bin/activate
+SEP=/
 else
-	PYTHON_BIN=$(PYTHON_ENV)\Scripts\python.exe
-	PIP_BIN=$(PYTHON_ENV)\Scripts\pip.exe
-	ACTIVATE=$(PYTHON_ENV)\Scripts\activate
-	SEP=\
-endif
+PYTHON_BIN=$(PYTHON_ENV)\Scripts\python.exe
+PIP_BIN=$(PYTHON_ENV)\Scripts\pip.exe
+ACTIVATE=$(PYTHON_ENV)\Scripts\activate
+SEP=\\
 endif
 
 
@@ -39,10 +31,6 @@ setup-all:
 	cd api-gateway && npm install
 	cd orchestrator && go mod tidy
 	@echo "All environments and dependencies are set up."
-
-
-transform-data:
-	$(PYTHON_BIN) scripts$(SEP)transform_kaggle_dataset.py
 
 
 run:
