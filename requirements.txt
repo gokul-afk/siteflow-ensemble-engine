@@ -5,3 +5,4 @@ numpy
 # XGBoost for ensemble model
 xgboost
 # argparse is part of Python stdlib, no need to add
+scikit-learn

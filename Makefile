@@ -42,3 +42,7 @@ run-prophet:
 run-sarima:
 	$(PYTHON_ENV)\Scripts\python models/forecast_sarima.py --site_id 1
 	# Runs the SARIMA forecasting model for site_id 1 using Python from the virtual environment.
+
+plot:
+	$(PYTHON_ENV)\Scripts\python models/plot_ensemble_results.py --site_id 1
+	# Plots the ensemble results for site_id 1 using Python from the virtual environment.
