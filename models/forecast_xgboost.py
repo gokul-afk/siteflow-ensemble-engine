@@ -34,9 +34,14 @@ def run_xgboost(site_id):
         df = get_mock_data()
     df['date'] = pd.to_datetime(df['date'])
     df = df.set_index('date')
-    # Prepare features for XGBoost (simple time series regression)
+    # Add time-based features
     df['dayofyear'] = df.index.dayofyear
-    X = df[['dayofyear']].values
+    df['month'] = df.index.month
+    df['weekday'] = df.index.weekday
+    # Add lagged feature (previous day's units_consumed)
+    df['lag1'] = df['units_consumed'].shift(1)
+    df = df.dropna()
+    X = df[['dayofyear', 'month', 'weekday', 'lag1']].values
     y = df['units_consumed'].values
     model = xgb.XGBRegressor(n_estimators=50, max_depth=3, random_state=42)
     try:
@@ -48,12 +53,24 @@ def run_xgboost(site_id):
         traceback.print_exc(file=sys.stderr)
         raise
     logging.info(f"[{pd.Timestamp.now()}] XGBoost: starting forecast generation")
-    last_day = df.index[-1].dayofyear
-    future_days = np.array([[last_day + i] for i in range(1, 8)])
-    preds = model.predict(future_days)
+    # Forecast next 7 days using last known values for lagged feature
+    preds = []
+    last_date = df.index[-1]
+    last_lag = df['units_consumed'][-1]
+    for i in range(1, 8):
+        future_date = last_date + pd.Timedelta(days=i)
+        features = [
+            future_date.dayofyear,
+            future_date.month,
+            future_date.weekday(),
+            last_lag
+        ]
+        pred = model.predict(np.array(features).reshape(1, -1))[0]
+        preds.append(pred)
+        last_lag = pred  # Use predicted value as lag for next day
     output = []
     for i, value in enumerate(preds):
-        date_str = (df.index[-1] + pd.Timedelta(days=i+1)).strftime('%Y-%m-%d')
+        date_str = (last_date + pd.Timedelta(days=i+1)).strftime('%Y-%m-%d')
         output.append({
             "date": date_str,
             "value": round(float(value), 2)
