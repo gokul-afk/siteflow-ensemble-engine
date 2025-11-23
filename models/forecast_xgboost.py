@@ -21,42 +21,61 @@ def get_mock_data():
 
 def run_xgboost(site_id):
     csv_path = get_data_path()
+    logging.info(f"[{pd.Timestamp.now()}] XGBoost: starting data load")
     if os.path.exists(csv_path):
-        logging.info(f"XGBoost: found CSV at {csv_path}")
+        logging.info(f"[{pd.Timestamp.now()}] XGBoost: found CSV at {csv_path}")
         df = pd.read_csv(csv_path)
-        logging.info(f"XGBoost: loaded CSV, shape={df.shape}")
+        logging.info(f"[{pd.Timestamp.now()}] XGBoost: loaded CSV, shape={df.shape}")
         if 'site_id' in df.columns:
             df = df[df['site_id'] == site_id]
-            logging.info(f"XGBoost: filtered by site_id={site_id}, rows={len(df)}")
+            logging.info(f"[{pd.Timestamp.now()}] XGBoost: filtered by site_id={site_id}, rows={len(df)}")
     else:
-        logging.warning(f"XGBoost: CSV not found at {csv_path}, using mock data")
+        logging.warning(f"[{pd.Timestamp.now()}] XGBoost: CSV not found at {csv_path}, using mock data")
         df = get_mock_data()
     df['date'] = pd.to_datetime(df['date'])
     df = df.set_index('date')
-    # Prepare features for XGBoost (simple time series regression)
+    # Add time-based features
     df['dayofyear'] = df.index.dayofyear
-    X = df[['dayofyear']].values
+    df['month'] = df.index.month
+    df['weekday'] = df.index.weekday
+    # Add lagged feature (previous day's units_consumed)
+    df['lag1'] = df['units_consumed'].shift(1)
+    df = df.dropna()
+    X = df[['dayofyear', 'month', 'weekday', 'lag1']].values
     y = df['units_consumed'].values
     model = xgb.XGBRegressor(n_estimators=50, max_depth=3, random_state=42)
     try:
-        logging.info("XGBoost: starting model fit")
+        logging.info(f"[{pd.Timestamp.now()}] XGBoost: starting model fit")
         model.fit(X, y)
-        logging.info("XGBoost: model fit complete")
+        logging.info(f"[{pd.Timestamp.now()}] XGBoost: model fit complete")
     except Exception as e:
-        logging.error("XGBoost: exception during model fit")
+        logging.error(f"[{pd.Timestamp.now()}] XGBoost: exception during model fit")
         traceback.print_exc(file=sys.stderr)
         raise
-    # Forecast next 7 days
-    last_day = df.index[-1].dayofyear
-    future_days = np.array([[last_day + i] for i in range(1, 8)])
-    preds = model.predict(future_days)
+    logging.info(f"[{pd.Timestamp.now()}] XGBoost: starting forecast generation")
+    # Forecast next 7 days using last known values for lagged feature
+    preds = []
+    last_date = df.index[-1]
+    last_lag = df['units_consumed'][-1]
+    for i in range(1, 8):
+        future_date = last_date + pd.Timedelta(days=i)
+        features = [
+            future_date.dayofyear,
+            future_date.month,
+            future_date.weekday(),
+            last_lag
+        ]
+        pred = model.predict(np.array(features).reshape(1, -1))[0]
+        preds.append(pred)
+        last_lag = pred  # Use predicted value as lag for next day
     output = []
     for i, value in enumerate(preds):
-        date_str = (df.index[-1] + pd.Timedelta(days=i+1)).strftime('%Y-%m-%d')
+        date_str = (last_date + pd.Timedelta(days=i+1)).strftime('%Y-%m-%d')
         output.append({
             "date": date_str,
             "value": round(float(value), 2)
         })
+    logging.info(f"[{pd.Timestamp.now()}] XGBoost: forecast generation complete")
     return output
 
 if __name__ == "__main__":
@@ -68,9 +87,12 @@ if __name__ == "__main__":
         "forecast": [],
         "error": None
     }
+    logging.info(f"[{pd.Timestamp.now()}] XGBoost: script started for site_id={args.site_id}")
     try:
         forecast_data = run_xgboost(args.site_id)
         response["forecast"] = forecast_data
+        logging.info(f"[{pd.Timestamp.now()}] XGBoost: script completed successfully")
     except Exception as e:
         response["error"] = str(e)
+        logging.error(f"[{pd.Timestamp.now()}] XGBoost: script failed with error: {e}")
     print(json.dumps(response))
