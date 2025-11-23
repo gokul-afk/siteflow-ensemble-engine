@@ -148,7 +148,6 @@ venv\Scripts\python models/plot_ensemble_results.py --site_id 1
 ```
 Find the generated image in `generated_forecasts/`.
 
-## Data Format Example
 
 ## OpenAPI Documentation
 
@@ -206,6 +205,7 @@ paths:
 				'500':
 					description: Internal server error
 ```
+## Data Format Example
 
 ```
 date,material,units_consumed,site_id
