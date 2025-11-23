@@ -5,7 +5,7 @@
 
 ## Example Forecast Comparison
 
-![Forecast Comparison Example](generated_forecasts/forecast_comparisons_site_1_20251124_003917.png)
+![Forecast Comparison Example](generated_forecasts/sample.png)
 
 ## Overview
 
