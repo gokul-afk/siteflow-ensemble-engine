@@ -1,10 +1,6 @@
 ## Example Forecast Comparison
 
-After running the ensemble plot script, a PNG image is saved in the `generated_forecasts` folder. You can display the latest generated image in your README like this:
-
-```
 ![Forecast Comparison Example](generated_forecasts/forecast_comparisons_site_1_20251123_234350.png)
-```
 
 # SiteFlow Ensemble Engine
 
