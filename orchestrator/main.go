@@ -37,7 +37,7 @@ func forecastHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 2. EXECUTOR: Run Python models in parallel
 	// We ask for these models specifically
-	models := []string{"prophet", "sarima"} 
+	models := []string{"prophet", "sarima", "xgboost"}
 	rawResults := RunEnsemble(siteID, models)
 
 	// 3. AGGREGATOR: Combine the results
