@@ -37,6 +37,7 @@ setup-all:
 	$(MAKE) setup-env
 	$(MAKE) activate-env
 	cd api-gateway && npm install
+	cd orchestrator && go mod tidy
 	@echo "All environments and dependencies are set up."
 
 
